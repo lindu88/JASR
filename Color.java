@@ -8,16 +8,10 @@ public class Color{
     final static Color BLACK = new Color(0,0,0);
     final static Color WHITE = new Color(255,255,255);
 
-    public Color(int R, int G, int B){//uses int instead of byte for eaiser convention
-        if (R > 256){R = 256;}
-        if (G > 256){G = 256;}//have to cap
-        if (B > 256){B = 256;}
-        if (R < 0){R = 0;}
-        if (G < 0){G = 0;}
-        if (B < 0){B = 0;}
-        this.R = R;
-        this.B = B;
-        this.G = G;
+    public Color(int R, int G, int B){//uses int instead of byte for eaiser convention\
+        this.R = cap(R);
+        this.B = cap(B);
+        this.G = cap(G);
     }
     public int getR(){
         return this.R;
@@ -32,11 +26,19 @@ public class Color{
         double R = this.R * k;
         double G = this.G * k;
         double B = this.B * k;
-        this.R = (int) R;
-        this.G = (int) G;
-        this.B = (int) B;
+        this.R = cap((int) R);
+        this.G = cap((int) G);
+        this.B = cap((int) B);
     }
     public Color clone(){
         return new Color(this.R,this.G,this.B);
     }
+
+    private int cap(int rgb){
+        int value;
+        if (rgb > 255){value = 255;}
+        else if (rgb < 0){value = 0;}
+        else {value = rgb;}
+        return value;
+    } 
 }

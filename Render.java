@@ -13,11 +13,10 @@ class Render{
     
     private Color traceRay(double[] O, double[] D, int t_max){
         Sphere closest_sphere = null;
-        double closest_t = 1000; //just a big number -- should be inf
+        double closest_t = 1000; //just a big number -- should be inf -- also sets a max render distance
         for (Sphere s: Scene.spheres){
            double t = intersectRaySphere(O, D, s)[0];
            if (t > 0){
-            //System.out.println(t);
            }
            if (t < closest_t && t != 0 && t < t_max){
             
@@ -32,23 +31,28 @@ class Render{
         double[] N = RenderMath.vectorSubtract(P, closest_sphere.getCenter());
         N = RenderMath.scalarMultiply(N, 1.0f / RenderMath.magnitude(N));
         Color color = closest_sphere.getColor().clone();
-        color.multiply(computeLight(P, N));
+        color.multiply(computeLight(P, N, RenderMath.scalarMultiply(D, -1), closest_sphere.getSpecular()));
+        if (color.getR() > 255){System.out.println(">255" + color.getR());}
         return color;
     }
     private double[] intersectRaySphere(double[] O, double[] D, Sphere sphere){
+        //returns the scalar t for the interstion points on the sphere from the camera
+        //Point in ray = Camera orgin + t * direction vector
+
         double r = sphere.getR();
         double[] CO = RenderMath.vectorSubtract(O, sphere.getCenter());
         double a = RenderMath.dot(D, D);
-        //System.out.println(a);
+        
         double b = 2 * RenderMath.dot(CO, D);
-        //System.out.println(b);
+        
         double c = RenderMath.dot(CO, CO) - r*r;
-       // System.out.println(c);
+
         return RenderMath.quadraticFormula(a, b, c);
     }
-    private double computeLight(double[] P, double[] N){ //sets intenstiy of color per pixel acroding to light soruce -- diffuse reflection
+    private double computeLight(double[] P, double[] N, double[] V, double s){ //sets intenstiy of color per pixel acroding to light soruce 
         double i = 0.0;
         double[] L = null;
+        double[] R = null;
         for (Light l: Scene.lights){
             if (l.getType() == Light.Type.AMBIENT){
                 i += l.getIntesity();
@@ -60,9 +64,24 @@ class Render{
             else if (l.getType() == Light.Type.DIRECTIONAL){
                 L = RenderMath.vectorAdd(l.getDirection(), new double[]{0,0,0}); //clone "workaround" 
             }
+
+            //diffuse
             double nlDot = RenderMath.dot(N, L);
-            if ( nlDot > 0){
+            if ( nlDot > 0){ //no negative values - no lighting behind surface
                 i += l.getIntesity() * nlDot/(RenderMath.magnitude(N) * RenderMath.magnitude(L));
+            }
+            //specular
+            if (s != -1){
+                /*  R = 2 * N * dot(N,L) - L  */
+                R = RenderMath.scalarMultiply(N, 2);
+                R = RenderMath.scalarMultiply(R, RenderMath.dot(N, L));
+                R = RenderMath.vectorSubtract(R, L);
+                
+                double rvdot = RenderMath.dot(R, V);
+                if (rvdot > 0){
+                    
+                    i += l.getIntesity() * Math.pow(rvdot / (RenderMath.magnitude(R) * RenderMath.magnitude(V)), s);
+                }
             }
         }
         return i;
