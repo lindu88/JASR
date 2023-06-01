@@ -7,6 +7,6 @@ class Scene{
     public static Light[] lights = new Light[]{
         new Light(0.2, Light.Type.DIRECTIONAL, new double[]{1,4,4}),
         new Light(0.2),
-        new Light(0.6, Light.Type.POINT, new double[]{2,1,3})
+        new Light(0.6, Light.Type.POINT, new double[]{15,15,15})
     };
 }

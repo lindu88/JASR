@@ -12,18 +12,8 @@ class Render{
     }
     
     private Color traceRay(double[] O, double[] D, int t_max){
-        Sphere closest_sphere = null;
-        double closest_t = 1000; //just a big number -- should be inf -- also sets a max render distance
-        for (Sphere s: Scene.spheres){
-           double t = intersectRaySphere(O, D, s)[0];
-           if (t > 0){
-           }
-           if (t < closest_t && t != 0 && t < t_max){
-            
-            closest_sphere = s;
-            closest_t = t;
-           }
-        }
+        Sphere closest_sphere = closestSphere(O, D, 0, t_max);
+        double closest_t = closestT(O, D, 0, t_max);
         if (closest_sphere == null){
             return Color.WHITE;
         }
@@ -53,16 +43,24 @@ class Render{
         double i = 0.0;
         double[] L = null;
         double[] R = null;
+        double t_max = Settings.render_distance;
         for (Light l: Scene.lights){
             if (l.getType() == Light.Type.AMBIENT){
                 i += l.getIntesity();
             }
             else if (l.getType() == Light.Type.POINT){
                 L = RenderMath.vectorSubtract(l.getDirection(), P);
+                t_max = 1;
                 
             }
             else if (l.getType() == Light.Type.DIRECTIONAL){
                 L = RenderMath.vectorAdd(l.getDirection(), new double[]{0,0,0}); //clone "workaround" 
+            }
+
+            //shadows
+            Sphere shadowSphere = closestSphere(P, L, 0.001, t_max);
+            if (shadowSphere != null){
+                continue;
             }
 
             //diffuse
@@ -85,5 +83,29 @@ class Render{
             }
         }
         return i;
+    }
+
+    /* Java needs pairs and tupals.ect this isnt very efficient*/
+    private Sphere closestSphere(double[] O, double[] D, double t_min, double t_max){ //finds closest sphere in ray
+        Sphere closest_sphere = null;
+        double closest_t = Settings.render_distance; //just a big number -- should be inf -- also sets a max render distance
+        for (Sphere s: Scene.spheres){
+           double t = intersectRaySphere(O, D, s)[0];
+           if (t < closest_t && t > t_min && t < t_max){
+            closest_sphere = s;
+            closest_t = t;
+           }
+        }
+        return closest_sphere;
+    }
+    private double closestT(double[] O, double[] D, double t_min, double t_max){ //finds closest interseciton t in ray
+        double closest_t = Settings.render_distance; //just a big number -- should be inf -- also sets a max render distance
+        for (Sphere s: Scene.spheres){
+           double t = intersectRaySphere(O, D, s)[0];
+           if (t < closest_t && t > t_min && t < t_max){
+            closest_t = t;
+           }
+        }
+        return closest_t;
     }
 }
