@@ -1,8 +1,4 @@
-import java.util.Scanner;
-
-import javax.swing.JFrame;
-
-class Start extends JFrame{
+class Start{
     public static void main(String args[]){
         RenderGUI GUI = new RenderGUI();
         GUI.setVisible(true);
