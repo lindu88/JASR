@@ -30,25 +30,25 @@ public class RenderMath{
         }
         return scalarOut;
     }
-    public static double[][] getYaw(double alpha){
+    public static double[][] getRX(double alpha){
         return new double[][]{
-            {Math.cos(alpha), -1f * Math.sin(alpha), 0},
-            {Math.sin(alpha),      Math.cos(alpha),  0},
-            {0,            0,                        1}
+            {1,               0,                   0},
+            {0, Math.cos(alpha),  -1*Math.sin(alpha)},
+            {0, Math.sin(alpha),     Math.cos(alpha)}
         };
     }
-    public static double[][] getPitch(double beta){
+    public static double[][] getRY(double beta){
         return new double[][]{
             {Math.cos(beta),       0,    Math.sin(beta)},
             {0,                    1,                 0},
             {-1f * Math.sin(beta), 0,    Math.cos(beta)}
         };
     }
-    public static double[][] getRoll(double phi){
+    public static double[][] getRZ(double phi){
         return new double[][]{
-            {1,              0,                    0},
-            {0,  Math.cos(phi),    -1* Math.sin(phi)},
-            {0,  Math.sin(phi),        Math.cos(phi)}
+            {Math.cos(phi),  -1*Math.sin(phi),  0},
+            {Math.sin(phi),     Math.cos(phi),  0},
+            {0,                             0,  1}
         };
     }
     public static double[] multiply_3D(double[] a, double[][] b){//3D vector matrix multiply
@@ -60,10 +60,10 @@ public class RenderMath{
         }
         return c;
     }
-    public static double[] rotate(double[] a, double yaw, double pitch, double roll){ //3d rotate
-        a = RenderMath.multiply_3D(a, RenderMath.getYaw(yaw));
-        a = RenderMath.multiply_3D(a, RenderMath.getPitch(pitch));
-        a = RenderMath.multiply_3D(a, RenderMath.getRoll(roll));
+    public static double[] rotate(double[] a, double RX, double RY, double RZ){ //3d rotate
+        a = RenderMath.multiply_3D(a, RenderMath.getRX(RX));
+        a = RenderMath.multiply_3D(a, RenderMath.getRY(RY));
+        a = RenderMath.multiply_3D(a, RenderMath.getRZ(RZ));
         return a;
 
     }

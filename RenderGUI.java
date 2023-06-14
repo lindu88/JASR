@@ -13,9 +13,9 @@ public class RenderGUI extends JFrame {
     Render render;
     Canvas renderCanvas;
     JButton renderButton;
-    JSlider yawSlider;
-    JSlider pitchSlider;
-    JSlider rollSlider;
+    JSlider RXSlider;
+    JSlider RYSlider;
+    JSlider RZSlider;
     JTextArea camerOrginArea;
     RenderGUI(){
         super("Options");
@@ -26,14 +26,14 @@ public class RenderGUI extends JFrame {
         add(renderButton);
         renderButton.addActionListener(new renderButtonLisitiner());
 
-        yawSlider = new JSlider(-100, 100, 0);
-        add(yawSlider);
+        RXSlider = new JSlider(-100, 100, 0);
+        add(RXSlider);
 
-        pitchSlider = new JSlider(-100, 100, 0);
-        add(pitchSlider);
+        RYSlider = new JSlider(-100, 100, 0);
+        add(RYSlider);
 
-        rollSlider = new JSlider(-100, 100, 0);
-        add(rollSlider);
+        RZSlider = new JSlider(-100, 100, 0);
+        add(RZSlider);
 
         camerOrginArea = new JTextArea("0 0 0", 1, 0);
         add(camerOrginArea);
@@ -53,7 +53,7 @@ public class RenderGUI extends JFrame {
     }
     private class renderButtonLisitiner implements ActionListener{
         public void actionPerformed(ActionEvent e){
-            render.render(renderCanvas, getCameraOrgin(), yawSlider.getValue() / 100.0f, pitchSlider.getValue() / 100.0f, rollSlider.getValue() / 100.0f);
+            render.render(renderCanvas, getCameraOrgin(), RXSlider.getValue() / 100.0f, RYSlider.getValue() / 100.0f, RZSlider.getValue() / 100.0f);
         }
     }
 }
