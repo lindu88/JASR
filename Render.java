@@ -1,28 +1,50 @@
 class Render{
     //
-    public void render(Canvas screen, double[] O, double yaw, double pitch, double roll){
+    public void render(Canvas screen, double[] O, double yaw, double pitch, double roll, int recursion_depth){
         for (int x = -Settings.cW/2; x < Settings.cW/2; x++){
             for (int y = -Settings.cH/2 + 1; y < Settings.cH/2; y++){
                 double[] D = RenderMath.rotate(RenderMath.canvasToViewport(x, y), yaw, pitch, roll); //V - O
-                Color color = traceRay(O, D, 100);
+                Color color = traceRay(O, D, 1, Settings.render_distance, recursion_depth);
+                //System.out.println(color.getR());
                 screen.putPixel(x, y, color);
             }
         }
         screen.display();
     }
     
-    private Color traceRay(double[] O, double[] D, int t_max){
-        Sphere closest_sphere = closestSphere(O, D, 0, t_max);
-        double closest_t = closestT(O, D, 0, t_max);
+    private Color traceRay(double[] O, double[] D, double t_min, double t_max, int recursion_depth){
+        Sphere closest_sphere = closestSphere(O, D,0.001, t_max);
+        double closest_t = closestT(O, D, 0.001, t_max);
+
         if (closest_sphere == null){
-            return Color.WHITE;
+            return new Color(0, 0, 0); 
         }
+        //compute color on surface
         double[] P = RenderMath.vectorAdd(O, RenderMath.scalarMultiply(D, closest_t));
         double[] N = RenderMath.vectorSubtract(P, closest_sphere.getCenter());
         N = RenderMath.scalarMultiply(N, 1.0f / RenderMath.magnitude(N));
+
+        //compute lightings effect on color
         Color color = closest_sphere.getColor().clone();
         color.multiply(computeLight(P, N, RenderMath.scalarMultiply(D, -1), closest_sphere.getSpecular()));
-        if (color.getR() > 255){System.out.println(">255" + color.getR());}
+
+        //recursion limit and reflective index
+        double r = closest_sphere.getReflective();
+        if (recursion_depth <= 0 || r <= 0){
+            return color;
+        }
+
+        //refelction
+        double[] R = refelctRay(RenderMath.scalarMultiply(D, -1), N);
+        Color reflectedColor = traceRay(P, R, 0.001, t_max, recursion_depth - 1);
+         
+        
+
+        //compute color
+        color.multiply(1.0 - r);
+        reflectedColor.multiply(r);
+        color.add(reflectedColor);
+
         return color;
     }
     private double[] intersectRaySphere(double[] O, double[] D, Sphere sphere){
@@ -71,9 +93,7 @@ class Render{
             //specular
             if (s != -1){
                 /*  R = 2 * N * dot(N,L) - L  */
-                R = RenderMath.scalarMultiply(N, 2);
-                R = RenderMath.scalarMultiply(R, RenderMath.dot(N, L));
-                R = RenderMath.vectorSubtract(R, L);
+                R = refelctRay(L, N);
                 
                 double rvdot = RenderMath.dot(R, V);
                 if (rvdot > 0){
@@ -107,5 +127,12 @@ class Render{
            }
         }
         return closest_t;
+    }
+    private double[] refelctRay(double[] R, double[] N){
+        double[] ray;
+        ray = RenderMath.scalarMultiply(N, 2);
+        ray = RenderMath.scalarMultiply(ray, RenderMath.dot(N, R));
+        ray = RenderMath.vectorSubtract(ray, R);
+        return ray;
     }
 }

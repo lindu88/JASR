@@ -3,10 +3,18 @@ public class Color{
     private int G;
     private int B;
 
-    final static Color RED = new Color(255,0,0);
-    final static Color BLUE = new Color(0,0,255);
-    final static Color BLACK = new Color(0,0,0);
-    final static Color WHITE = new Color(255,255,255);
+    public static Color RED(){
+        return new Color(255,0,0);
+    }
+    public static Color BLUE(){
+        return new Color(0,0,255);
+    }
+    public static Color BLACK(){
+        return new Color(0,0,0);
+    }
+    public static Color WHITE(){
+        return new Color(255,255,255);
+    }
 
     public Color(int R, int G, int B){//uses int instead of byte for eaiser convention\
         this.R = cap(R);
@@ -32,6 +40,11 @@ public class Color{
     }
     public Color clone(){
         return new Color(this.R,this.G,this.B);
+    }
+    public void add(Color color){
+        this.R = cap(color.getR() + this.R);
+        this.G = cap(color.getG() + this.G);
+        this.B = cap(color.getB() + this.B);
     }
 
     private int cap(int rgb){

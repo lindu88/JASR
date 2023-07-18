@@ -16,10 +16,11 @@ public class RenderGUI extends JFrame {
     JSlider RXSlider;
     JSlider RYSlider;
     JSlider RZSlider;
+    JSlider ReflectiveSlider;
     JTextArea camerOrginArea;
     RenderGUI(){
         super("Options");
-        setLayout(new GridLayout(5, 0));
+        setLayout(new GridLayout(6, 0));
         setSize(250, 600);
 
         renderButton = new JButton("Render");
@@ -34,6 +35,9 @@ public class RenderGUI extends JFrame {
 
         RZSlider = new JSlider(-100, 100, 0);
         add(RZSlider);
+
+        ReflectiveSlider = new JSlider(0, 6, 3);
+        add(ReflectiveSlider);
 
         camerOrginArea = new JTextArea("0 0 0", 1, 0);
         add(camerOrginArea);
@@ -53,7 +57,7 @@ public class RenderGUI extends JFrame {
     }
     private class renderButtonLisitiner implements ActionListener{
         public void actionPerformed(ActionEvent e){
-            render.render(renderCanvas, getCameraOrgin(), RXSlider.getValue() / 100.0f, RYSlider.getValue() / 100.0f, RZSlider.getValue() / 100.0f);
+            render.render(renderCanvas, getCameraOrgin(), RXSlider.getValue() / 100.0f, RYSlider.getValue() / 100.0f, RZSlider.getValue() / 100.0f, ReflectiveSlider.getValue());
         }
     }
 }

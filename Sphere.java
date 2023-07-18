@@ -3,11 +3,13 @@ class Sphere{
     private double[] center;
     private Color color;
     private double specular;
-    public Sphere(double r, double[] center, Color color, double specular){
+    private double reflective;
+    public Sphere(double r, double[] center, Color color, double specular, double reflective){
         this.r = r;
         this.center = center;
         this.color = color;
         this.specular = specular;
+        this.reflective = reflective;
     }
     public double getR(){
         return this.r;
@@ -20,5 +22,8 @@ class Sphere{
     }
     public double getSpecular(){
         return this.specular;
+    }
+    public double getReflective(){
+        return this.reflective;
     }
 }
