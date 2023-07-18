@@ -17,7 +17,7 @@ class Render{
         double closest_t = closestT(O, D, 0.001, t_max);
 
         if (closest_sphere == null){
-            return new Color(0, 0, 0); 
+            return Color.BLACK(); 
         }
         //compute color on surface
         double[] P = RenderMath.vectorAdd(O, RenderMath.scalarMultiply(D, closest_t));

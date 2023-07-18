@@ -9,7 +9,7 @@ From top down the gui consists of: Render button, Rotaion along x axis(Rx) slide
 
 TODO:
 transparency
-Polygon Rendering
+triangle Rendering
 Textures
 More visually pleasing and complex GUI
 3D file support

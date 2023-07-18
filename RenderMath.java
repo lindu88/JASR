@@ -30,6 +30,33 @@ public class RenderMath{
         }
         return scalarOut;
     }
+    public static double[] cross(double[] a, double[] b){
+        return new double[]{a[1]*b[2]-a[2]*b[1],a[0]*b[2]-a[2]*b[0],a[0]*b[2]-a[1]*b[0]};
+    }
+
+    //check if point is inside triangle 
+    public static boolean checkPoint(double[] a, double[] b, double[] c, double[] p){
+
+        //define vectors
+        double[] ab = RenderMath.vectorSubtract(b, a);
+        double[] bc = RenderMath.vectorSubtract(c, b);
+        double[] ca = RenderMath.vectorSubtract(a, c);
+        
+        double[] ap = RenderMath.vectorSubtract(p, a);
+        double[] bp = RenderMath.vectorSubtract(p, b);
+        double[] cp = RenderMath.vectorSubtract(p, c);
+
+        // if all cross products point in the same direection return true
+        if (cross(ab, ap)[2] > 0 && cross(bc, bp)[2] > 0 && cross(ca, cp)[2] > 0){
+            return true;
+        }
+        else if (cross(ab, ap)[2] < 0 && cross(bc, bp)[2] < 0 && cross(ca, cp)[2] < 0){
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
     public static double[][] getRX(double alpha){
         return new double[][]{
             {1,               0,                   0},
