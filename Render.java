@@ -14,7 +14,7 @@ class Render{
     
     private Color traceRay(double[] O, double[] D, double t_min, double t_max, int recursion_depth){
         Sphere closest_sphere = closestSphere(O, D,0.001, t_max);
-        double closest_t = closestT(O, D, 0.001, t_max);
+        double closest_t = closestTSphere(O, D, 0.001, t_max);
 
         if (closest_sphere == null){
             return Color.BLACK(); 
@@ -108,7 +108,7 @@ class Render{
     /* Java needs pairs and tupals.ect this isnt very efficient*/
     private Sphere closestSphere(double[] O, double[] D, double t_min, double t_max){ //finds closest sphere in ray
         Sphere closest_sphere = null;
-        double closest_t = Settings.render_distance; //just a big number -- should be inf -- also sets a max render distance
+        double closest_t = 10000; //just a big number -- should be inf -- also sets a max render distance
         for (Sphere s: Scene.spheres){
            double t = intersectRaySphere(O, D, s)[0];
            if (t < closest_t && t > t_min && t < t_max){
@@ -118,8 +118,8 @@ class Render{
         }
         return closest_sphere;
     }
-    private double closestT(double[] O, double[] D, double t_min, double t_max){ //finds closest interseciton t in ray
-        double closest_t = Settings.render_distance; //just a big number -- should be inf -- also sets a max render distance
+    private double closestTSphere(double[] O, double[] D, double t_min, double t_max){ //finds closest interseciton t in ray
+        double closest_t = 10000; //just a big number -- should be inf -- also sets a max render distance
         for (Sphere s: Scene.spheres){
            double t = intersectRaySphere(O, D, s)[0];
            if (t < closest_t && t > t_min && t < t_max){
@@ -127,6 +127,11 @@ class Render{
            }
         }
         return closest_t;
+    }
+    private double intersectRayPlane(double[] O, double[] D, double[] N, double[] vertex){
+        double numerator = -1 * RenderMath.dot(N, RenderMath.vectorSubtract(O, vertex));
+        double denominator = RenderMath.dot(N, D);
+        return numerator / denominator;
     }
     // returns /*  R = 2 * N * dot(N,L) - L  */
     // returns vector for reflected ray
