@@ -128,6 +128,8 @@ class Render{
         }
         return closest_t;
     }
+    // returns /*  R = 2 * N * dot(N,L) - L  */
+    // returns vector for reflected ray
     private double[] refelctRay(double[] R, double[] N){
         double[] ray;
         ray = RenderMath.scalarMultiply(N, 2);

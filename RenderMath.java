@@ -1,13 +1,13 @@
 import java.lang.Math;
 public class RenderMath{
-    public static double[] quadraticFormula(double a, double b, double c){//returns only two real non eaual roots
+    //returns only two real non equal roots
+    //Result is sorted from smallest to greatest
+    public static double[] quadraticFormula(double a, double b, double c){
         double determinant = b * b - 4 * a * c;
         double root1, root2;
 
-        //System.out.println(determinant);
-          // check if determinant is greater than 0
-        if (determinant > 0) {
         // two real and distinct roots
+        if (determinant > 0) {
             root1 = (-b + Math.sqrt(determinant)) / (2 * a);
             root2 = (-b - Math.sqrt(determinant)) / (2 * a);
 
@@ -30,6 +30,7 @@ public class RenderMath{
         }
         return scalarOut;
     }
+    //cross product
     public static double[] cross(double[] a, double[] b){
         return new double[]{a[1]*b[2]-a[2]*b[1],-1*(a[0]*b[2]-a[2]*b[0]),a[0]*b[2]-a[1]*b[0]};
     }
@@ -57,6 +58,7 @@ public class RenderMath{
             return false;
         }
     }
+    //rotation along x axis (RX)
     public static double[][] getRX(double alpha){
         return new double[][]{
             {1,               0,                   0},
