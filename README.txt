@@ -16,7 +16,6 @@ refraction
 Textures
 More visually pleasing and complex GUI
 
-maybe a generic pair container
 more comments
 
 eventually tools for building a scene
