@@ -1,4 +1,8 @@
+package Base;
 import java.util.ArrayList;
+import Base.Primitives.Sphere;
+import Base.RenderComponents.Color;
+import Base.RenderComponents.Light;
 
 class Scene{
     public static Sphere[] spheres = new Sphere[]{

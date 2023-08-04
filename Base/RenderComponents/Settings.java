@@ -1,4 +1,5 @@
-class Settings{
+package Base.RenderComponents;
+public class Settings{
     public final static int cW = 1000; //canvas width
     public final static int cH = 1000; //canvas height
     public final static double vpW = 1; //Viewport width 

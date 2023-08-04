@@ -1,6 +1,11 @@
+package Base;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+
+import Base.RenderComponents.Color;
+import Base.RenderComponents.Settings;
+
 import java.awt.image.BufferedImage;
 
 public class Canvas extends JFrame{

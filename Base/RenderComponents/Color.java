@@ -1,3 +1,4 @@
+package Base.RenderComponents;
 public class Color{
     private int R;
     private int G;

@@ -1,3 +1,4 @@
+package Base;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -9,6 +10,7 @@ import javax.swing.JFrame;
 import javax.swing.JSlider;
 import javax.swing.JTextArea;
 
+import Base.RenderComponents.Settings;
 public class RenderGUI extends JFrame {
     Render render;
     Canvas renderCanvas;
@@ -18,7 +20,7 @@ public class RenderGUI extends JFrame {
     JSlider RZSlider;
     JSlider ReflectiveSlider;
     JTextArea camerOrginArea;
-    RenderGUI(){
+    public RenderGUI(){
         super("Options");
         setLayout(new GridLayout(6, 0));
         setSize(250, 600);

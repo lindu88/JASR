@@ -1,4 +1,5 @@
-class Light{
+package Base.RenderComponents;
+public class Light{
     public enum Type {AMBIENT, POINT, DIRECTIONAL}
     private double intesity;
     private Type name;

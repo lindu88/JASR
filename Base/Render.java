@@ -1,3 +1,9 @@
+package Base;
+import Base.Primitives.Sphere;
+import Base.RenderComponents.Color;
+import Base.RenderComponents.Light;
+import Base.RenderComponents.RenderMath;
+import Base.RenderComponents.Settings;
 class Render{
     //
     public void render(Canvas screen, double[] O, double yaw, double pitch, double roll, int recursion_depth){

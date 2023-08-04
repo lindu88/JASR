@@ -1,4 +1,7 @@
-class Sphere{
+package Base.Primitives;
+
+import Base.RenderComponents.Color;;
+public class Sphere{
     private double r;
     private double[] center;
     private Color color;
