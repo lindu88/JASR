@@ -4,6 +4,7 @@ import Base.RenderComponents.Color;
 import Base.RenderComponents.Light;
 import Base.RenderComponents.RenderMath;
 import Base.RenderComponents.Settings;
+import Base.Generics.Pair;
 class Render{
     //
     public void render(Canvas screen, double[] O, double yaw, double pitch, double roll, int recursion_depth){
@@ -19,8 +20,9 @@ class Render{
     }
     
     private Color traceRay(double[] O, double[] D, double t_min, double t_max, int recursion_depth){
-        Sphere closest_sphere = closestSphere(O, D,0.001, t_max);
-        double closest_t = closestTSphere(O, D, 0.001, t_max);
+        Pair<Sphere, Double> closestSphereAndT = closestSphereAndT(O, D, 0.001, t_max);
+        Sphere closest_sphere = closestSphereAndT.getFirst();
+        double closest_t = closestSphereAndT.getSecond();
 
         if (closest_sphere == null){
             return Color.BLACK(); 
@@ -86,7 +88,7 @@ class Render{
             }
 
             //shadows
-            Sphere shadowSphere = closestSphere(P, L, 0.001, t_max);
+            Sphere shadowSphere = closestSphereAndT(P, L, 0.001, t_max).getFirst();
             if (shadowSphere != null){
                 continue;
             }
@@ -111,8 +113,8 @@ class Render{
         return i;
     }
 
-    /* Java needs pairs and tupals.ect this isnt very efficient*/
-    private Sphere closestSphere(double[] O, double[] D, double t_min, double t_max){ //finds closest sphere in ray
+    /* used pair to avoid repeat calculations*/
+    private Pair<Sphere, Double> closestSphereAndT(double[] O, double[] D, double t_min, double t_max){ //finds closest sphere in ray
         Sphere closest_sphere = null;
         double closest_t = 10000; //just a big number -- should be inf -- also sets a max render distance
         for (Sphere s: Scene.spheres){
@@ -122,17 +124,8 @@ class Render{
             closest_t = t;
            }
         }
-        return closest_sphere;
-    }
-    private double closestTSphere(double[] O, double[] D, double t_min, double t_max){ //finds closest interseciton t in ray
-        double closest_t = 10000; //just a big number -- should be inf -- also sets a max render distance
-        for (Sphere s: Scene.spheres){
-           double t = intersectRaySphere(O, D, s)[0];
-           if (t < closest_t && t > t_min && t < t_max){
-            closest_t = t;
-           }
-        }
-        return closest_t;
+        
+        return new Pair<Sphere,Double>(closest_sphere, closest_t);
     }
     private double intersectRayPlane(double[] O, double[] D, double[] N, double[] vertex){
         double numerator = -1 * RenderMath.dot(N, RenderMath.vectorSubtract(O, vertex));
