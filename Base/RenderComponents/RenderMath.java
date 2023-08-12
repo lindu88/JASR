@@ -33,31 +33,36 @@ public class RenderMath{
     }
     //cross product
     public static double[] cross(double[] a, double[] b){
-        return new double[]{a[1]*b[2]-a[2]*b[1],-1*(a[0]*b[2]-a[2]*b[0]),a[0]*b[2]-a[1]*b[0]};
+        return new double[]{a[1]*b[2]-a[2]*b[1],-1*(a[0]*b[2]-a[2]*b[0]),a[0]*b[1]-a[1]*b[0]};
     }
 
-    //check if point is inside triangle 
+    //check if point is inside triangle with barycentric cords of point projected on the plane of the triangle abc
+    
     public static boolean checkPoint(double[] a, double[] b, double[] c, double[] p){
+        double[] u = vectorSubtract(b, a);
+        double[] v = vectorSubtract(c, a);
 
-        //define vectors
-        double[] ab = RenderMath.vectorSubtract(b, a);
-        double[] bc = RenderMath.vectorSubtract(c, b);
-        double[] ca = RenderMath.vectorSubtract(a, c);
+        double[] w = vectorSubtract(p, a);
+
+        double[] N = cross(u, v);
         
-        double[] ap = RenderMath.vectorSubtract(p, a);
-        double[] bp = RenderMath.vectorSubtract(p, b);
-        double[] cp = RenderMath.vectorSubtract(p, c);
+        double gamma = dot(cross(u, w),N) / dot(N, N);
+        
+        double beta = dot(cross(w, v),N) / dot(N, N);
+        double alpha = 1f - gamma - beta;
+        
+        
+        return (0 <= alpha && alpha <= 1) && (0 <= beta && beta <= 1) && (0 <= gamma && gamma <= 1);
+      
+    }
 
-        // if all cross products point in the same direection return true
-        if (cross(ab, ap)[2] > 0 && cross(bc, bp)[2] > 0 && cross(ca, cp)[2] > 0){
-            return true;
-        }
-        else if (cross(ab, ap)[2] < 0 && cross(bc, bp)[2] < 0 && cross(ca, cp)[2] < 0){
-            return true;
-        }
-        else {
-            return false;
-        }
+    public static double[] getPointFromRay(double[] O, double[] D, double t){
+        return vectorAdd(O, scalarMultiply(D, t));
+    }
+    //to avoid floating point errors : common algorithm that rounds double to int places
+    public static double round(double d, int places){
+        double scale = Math.pow(10, places);
+        return Math.round(d * scale) / scale;
     }
     //rotation along x axis (RX)
     public static double[][] getRX(double alpha){

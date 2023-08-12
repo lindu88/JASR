@@ -1,18 +1,18 @@
 package Base;
-import Base.Primitives.Sphere;
 import Base.RenderComponents.Color;
 import Base.RenderComponents.Light;
+import Base.RenderComponents.RenderContainer;
 import Base.RenderComponents.RenderMath;
 import Base.RenderComponents.Settings;
-import Base.Generics.Pair;
+import Base.Generics.*;
+import Base.Primitives.*;
 class Render{
     //
     public void render(Canvas screen, double[] O, double yaw, double pitch, double roll, int recursion_depth){
         for (int x = -Settings.cW/2; x < Settings.cW/2; x++){
             for (int y = -Settings.cH/2 + 1; y < Settings.cH/2; y++){
                 double[] D = RenderMath.rotate(RenderMath.canvasToViewport(x, y), yaw, pitch, roll); //V - O
-                Color color = traceRay(O, D, 1, Settings.render_distance, recursion_depth);
-                //System.out.println(color.getR());
+                Color color = traceRay(O, D, 0.001, Settings.render_distance, recursion_depth);
                 screen.putPixel(x, y, color);
             }
         }
@@ -20,31 +20,33 @@ class Render{
     }
     
     private Color traceRay(double[] O, double[] D, double t_min, double t_max, int recursion_depth){
-        Pair<Sphere, Double> closestSphereAndT = closestSphereAndT(O, D, 0.001, t_max);
-        Sphere closest_sphere = closestSphereAndT.getFirst();
-        double closest_t = closestSphereAndT.getSecond();
+        RenderContainer primative = getClosestPrimativeColorAndT(O, D, 0.001, t_max);
 
-        if (closest_sphere == null){
+        if (primative == null){
             return Color.BLACK(); 
         }
-        //compute color on surface
-        double[] P = RenderMath.vectorAdd(O, RenderMath.scalarMultiply(D, closest_t));
-        double[] N = RenderMath.vectorSubtract(P, closest_sphere.getCenter());
+        double[] P = RenderMath.getPointFromRay(O,D,primative.getTime());
+
+        double[] N = primative.getNormal();
+        //make unit normal
         N = RenderMath.scalarMultiply(N, 1.0f / RenderMath.magnitude(N));
 
         //compute lightings effect on color
-        Color color = closest_sphere.getColor().clone();
-        color.multiply(computeLight(P, N, RenderMath.scalarMultiply(D, -1), closest_sphere.getSpecular()));
+        
+        Color color = primative.getColor().clone();
+        
+        color.multiply(computeLight(P, N, RenderMath.scalarMultiply(D, -1), primative.getSpecular()));
 
         //recursion limit and reflective index
-        double r = closest_sphere.getReflective();
+        double r = primative.getReflective();
+       
         if (recursion_depth <= 0 || r <= 0){
             return color;
         }
 
         //refelction
         double[] R = refelctRay(RenderMath.scalarMultiply(D, -1), N);
-        Color reflectedColor = traceRay(P, R, 0.001, t_max, recursion_depth - 1);
+        Color reflectedColor = traceRay(P, R, t_min, t_max, recursion_depth - 1);
          
         
 
@@ -88,8 +90,8 @@ class Render{
             }
 
             //shadows
-            Sphere shadowSphere = closestSphereAndT(P, L, 0.001, t_max).getFirst();
-            if (shadowSphere != null){
+            RenderContainer shadow = getClosestPrimativeColorAndT(P, L, 0.001, t_max);
+            if (shadow != null){
                 continue;
             }
 
@@ -127,10 +129,76 @@ class Render{
         
         return new Pair<Sphere,Double>(closest_sphere, closest_t);
     }
+    /*
+     * Will change to render surfaces 
+     */
+    private Pair<Triangle, Double> closestTriangleAndT(double[] O, double[] D, double t_min, double t_max){ //finds closest sphere in ray
+        Triangle closest_triangle = null;
+        double closest_t = 10000; //just a big number -- should be inf -- also sets a max render distance
+        for (Triangle p: Scene.triangles){
+            double[] N = RenderMath.cross(RenderMath.vectorSubtract(p.getB(), p.getA()), RenderMath.vectorSubtract(p.getC(), p.getA()));
+            N = RenderMath.scalarMultiply(N, 1f / RenderMath.magnitude(N));
+            double t = intersectRayPlane(O, D, N, p.getA());
+            double[] point = RenderMath.getPointFromRay(O, D, t);
+            //check if in triangle
+            boolean inTri = false;
+            if (t>0){
+                inTri = RenderMath.checkPoint(p.getA(), p.getB(), p.getC(), point);
+            }
+
+            if ((t < closest_t & t > t_min & t < t_max) & inTri){
+                closest_triangle = p;
+                closest_t = t;
+            }
+
+        }
+        
+        return new Pair<Triangle,Double>(closest_triangle, closest_t);
+    }
+    public RenderContainer getClosestPrimativeColorAndT(double[] O, double[] D, double t_min, double t_max){
+        Pair<Sphere, Double> tSphere = closestSphereAndT(O, D, t_min, t_max);
+        Pair<Triangle, Double> tTriangle = closestTriangleAndT(O, D, t_min, t_max);
+        double[] NSphere = null;
+        double[] NTriangle = null;
+
+        double timeForSphere = tSphere.getSecond();
+        double timeForTriangle = tTriangle.getSecond();
+
+        //Could filter out null another way but this works. If null assume > max distance
+        if (tSphere.getFirst() == null){
+            timeForSphere = t_max + 1f;
+        }
+        if (tTriangle.getFirst() == null){
+            timeForTriangle = t_max + 1f;
+        }
+
+        if (timeForSphere < timeForTriangle){
+            NSphere = RenderMath.vectorSubtract(RenderMath.getPointFromRay(O, D, tSphere.getSecond()), tSphere.getFirst().getCenter());
+            return new RenderContainer(tSphere.getFirst().getColor(), NSphere, timeForSphere,tSphere.getFirst().getReflective(), tSphere.getFirst().getSpecular() );
+        }
+        if(timeForSphere > timeForTriangle){
+            //System.out.println(timeForTriangle);
+            NTriangle = RenderMath.cross(RenderMath.vectorSubtract(tTriangle.getFirst().getB(), tTriangle.getFirst().getA()), RenderMath.vectorSubtract(tTriangle.getFirst().getC(), tTriangle.getFirst().getA()));
+            //NTriangle = RenderMath.scalarMultiply(NTriangle, 1f / RenderMath.magnitude(NTriangle));
+            return new RenderContainer(tTriangle.getFirst().getColor(), NTriangle, timeForTriangle, tTriangle.getFirst().getReflective(), tTriangle.getFirst().getSpecular());
+        }
+        else{
+            return null;
+        }
+    }
+    
     private double intersectRayPlane(double[] O, double[] D, double[] N, double[] vertex){
-        double numerator = -1 * RenderMath.dot(N, RenderMath.vectorSubtract(O, vertex));
         double denominator = RenderMath.dot(N, D);
-        return numerator / denominator;
+       
+        if (denominator > 0.001f){
+            double numerator = (RenderMath.dot(RenderMath.vectorSubtract(vertex, O), N));
+            double t = numerator / denominator;
+             //System.out.println(t);
+            return t;
+        }
+        else{
+            return 0;
+        }
     }
     // returns /*  R = 2 * N * dot(N,L) - L  */
     // returns vector for reflected ray
