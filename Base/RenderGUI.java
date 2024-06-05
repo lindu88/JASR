@@ -59,7 +59,47 @@ public class RenderGUI extends JFrame {
     }
     private class renderButtonLisitiner implements ActionListener{
         public void actionPerformed(ActionEvent e){
-            render.render(renderCanvas, getCameraOrgin(), RXSlider.getValue() / 100.0f, RYSlider.getValue() / 100.0f, RZSlider.getValue() / 100.0f, ReflectiveSlider.getValue());
+            double xRot = RXSlider.getValue() / 100.0f;
+            double yRot = RYSlider.getValue() / 100.0f;
+            double zRot = RZSlider.getValue() / 100.0f;
+            int reflRecursion = ReflectiveSlider.getValue();
+
+
+            int threadCount =  Settings.thread_count;
+            if (threadCount % 2 != 0) threadCount++;
+
+            int xBlockSize = threadCount/2;
+            int yBlockSize = 2;
+
+            int xSegSize = Settings.cW/xBlockSize;
+            int ySegSize = Settings.cH/yBlockSize;
+
+            for (int i = 0; i < yBlockSize; i++){
+                for (int j = 0; j < xBlockSize; j++){
+                    int finalJ = j;
+                    int finalI = i;
+
+                    // min and max screen numbers
+                    //xMin = -Settings.cW/2
+                    //xMax = Settings.cW/2
+                    //yMin = -Settings.cH/2 + 1
+                    //yMax = Settings.cH/2;
+
+                    int xMin = finalJ*xSegSize - Settings.cW/2;
+                    int xMax = (finalJ+1)*xSegSize - Settings.cW/2;
+                    int yMin = (finalI*ySegSize) - Settings.cH/2;
+                    int yMax = (finalI+1)*ySegSize -  Settings.cH/2 + 1;
+
+                    Runnable renderThread = () ->
+                    {
+                        render.render(renderCanvas, getCameraOrgin(), xRot, yRot, zRot, reflRecursion, xMin, xMax, yMin, yMax);
+                    };
+                    Thread run = new Thread(renderThread);
+                    run.start();
+                }
+            }
+
+
         }
     }
 }

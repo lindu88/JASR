@@ -33,6 +33,8 @@ public class Canvas extends JFrame{
         int a = 255;//alpha - implement later
 
         int col =  (a << 24) | (color.getR() << 16) | (color.getG() << 8) | color.getB(); //RGB to int
+
+        //System.out.println(x + " " + y);
         displayImage.setRGB(x, y, col);
     }
     public void display(){ //updates display image

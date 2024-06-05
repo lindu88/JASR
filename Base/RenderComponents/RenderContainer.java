@@ -1,6 +1,6 @@
 package Base.RenderComponents;
 
-//container to encapsulate the different data needed to render primatives
+//container to encapsulate the different data needed to render primitives
 //will have to change when implementing textures
 public class RenderContainer {
     private Color color;

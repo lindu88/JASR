@@ -8,10 +8,14 @@ import Base.Generics.*;
 import Base.Primitives.*;
 class Render{
     //
-    public void render(Canvas screen, double[] O, double yaw, double pitch, double roll, int recursion_depth){
-        for (int x = -Settings.cW/2; x < Settings.cW/2; x++){
-            for (int y = -Settings.cH/2 + 1; y < Settings.cH/2; y++){
-                double[] D = RenderMath.rotate(RenderMath.canvasToViewport(x, y), yaw, pitch, roll); //V - O
+    public void render(Canvas screen, double[] O, double xRot, double yRot, double zRot, int recursion_depth, int xMin, int xMax, int yMin, int yMax){
+        //xMin = -Settings.cW/2
+        //xMax = Settings.cW/2
+        //yMin = -Settings.cH/2 + 1
+        //yMax = Settings.cH/2;
+        for (int x = xMin; x < xMax; x++){
+            for (int y = yMin + 1; y < yMax; y++){
+                double[] D = RenderMath.rotate(RenderMath.canvasToViewport(x, y), xRot, yRot, zRot); //V - O
                 Color color = traceRay(O, D, 0.001, Settings.render_distance, recursion_depth);
                 screen.putPixel(x, y, color);
             }
@@ -20,32 +24,32 @@ class Render{
     }
     
     private Color traceRay(double[] O, double[] D, double t_min, double t_max, int recursion_depth){
-        RenderContainer primative = getClosestPrimativeColorAndT(O, D, 0.001, t_max);
+        RenderContainer primitive = getClosestPrimitiveColorAndT(O, D, 0.001, t_max);
 
-        if (primative == null){
+        if (primitive == null){
             return Color.BLACK(); 
         }
-        double[] P = RenderMath.getPointFromRay(O,D,primative.getTime());
+        double[] P = RenderMath.getPointFromRay(O,D,primitive.getTime());
 
-        double[] N = primative.getNormal();
+        double[] N = primitive.getNormal();
         //make unit normal
         N = RenderMath.scalarMultiply(N, 1.0f / RenderMath.magnitude(N));
 
-        //compute lightings effect on color
+        //compute lighting effect on color
         
-        Color color = primative.getColor().clone();
+        Color color = primitive.getColor().clone();
         
-        color.multiply(computeLight(P, N, RenderMath.scalarMultiply(D, -1), primative.getSpecular()));
+        color.multiply(computeLight(P, N, RenderMath.scalarMultiply(D, -1), primitive.getSpecular()));
 
         //recursion limit and reflective index
-        double r = primative.getReflective();
+        double r = primitive.getReflective();
        
         if (recursion_depth <= 0 || r <= 0){
             return color;
         }
 
-        //refelction
-        double[] R = refelctRay(RenderMath.scalarMultiply(D, -1), N);
+        //reelection
+        double[] R = reflectRay(RenderMath.scalarMultiply(D, -1), N);
         Color reflectedColor = traceRay(P, R, t_min, t_max, recursion_depth - 1);
          
         
@@ -90,7 +94,7 @@ class Render{
             }
 
             //shadows
-            RenderContainer shadow = getClosestPrimativeColorAndT(P, L, 0.001, t_max);
+            RenderContainer shadow = getClosestPrimitiveColorAndT(P, L, 0.001, t_max);
             if (shadow != null){
                 continue;
             }
@@ -103,7 +107,7 @@ class Render{
             //specular
             if (s != -1){
                 /*  R = 2 * N * dot(N,L) - L  */
-                R = refelctRay(L, N);
+                R = reflectRay(L, N);
                 
                 double rvdot = RenderMath.dot(R, V);
                 if (rvdot > 0){
@@ -155,7 +159,7 @@ class Render{
         
         return new Pair<Triangle,Double>(closest_triangle, closest_t);
     }
-    public RenderContainer getClosestPrimativeColorAndT(double[] O, double[] D, double t_min, double t_max){
+    public RenderContainer getClosestPrimitiveColorAndT(double[] O, double[] D, double t_min, double t_max){
         Pair<Sphere, Double> tSphere = closestSphereAndT(O, D, t_min, t_max);
         Pair<Triangle, Double> tTriangle = closestTriangleAndT(O, D, t_min, t_max);
         double[] NSphere = null;
@@ -192,9 +196,8 @@ class Render{
        
         if (denominator > 0.001f){
             double numerator = (RenderMath.dot(RenderMath.vectorSubtract(vertex, O), N));
-            double t = numerator / denominator;
-             //System.out.println(t);
-            return t;
+            //System.out.println(t);
+            return numerator / denominator;
         }
         else{
             return 0;
@@ -202,7 +205,7 @@ class Render{
     }
     // returns /*  R = 2 * N * dot(N,L) - L  */
     // returns vector for reflected ray
-    private double[] refelctRay(double[] R, double[] N){
+    private double[] reflectRay(double[] R, double[] N){
         double[] ray;
         ray = RenderMath.scalarMultiply(N, 2);
         ray = RenderMath.scalarMultiply(ray, RenderMath.dot(N, R));
