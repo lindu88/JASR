@@ -6,17 +6,15 @@ Basics based off the book "Computer Graphics From Scratch" by Gabriel Gambetta
 
 Compile all and run `Start.java`.
 
-From top down the GUI consists of:
+From top down and left to right the GUI consists of:
 - Render button
-- Rotation along x-axis (Rx) slider
-- Ry slider
-- Rz slider
 - Max reflective recursions
-- Camera origin text area -> "0 0 0"
+- Jump amount when pressing the keys(0-1)
+- Render screen (simple render unless render button is pressed)
 
 ## TODO
 
-- Render export and GUI update
+- Render export
 - 3D file support (for now STL because it's simple)
 - Transparency
 - Refraction
@@ -25,3 +23,17 @@ From top down the GUI consists of:
 - More comments
 - Eventually tools for building a scene
 - Cleanup and better code organization
+
+## KEYBINDINGS
+up arrow = rotate camera up
+down arrow = rotate camera down
+left arrow = rotate camera left
+right arrow = rotate camera right
+minus = zoom camera out
+equals = zoom camera in
+numpad 8 = move camera up
+numpad 2 = move camera down
+numpad 4 = move camera left
+numpad 6 = move camera right
+numpad 0 = rotate camera along z axis left
+numpad delete = rotate camera along z agis right

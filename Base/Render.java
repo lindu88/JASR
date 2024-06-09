@@ -22,6 +22,29 @@ class Render{
         }
         screen.display();
     }
+    public void simpleRender(Canvas screen, double[] O, double xRot, double yRot, double zRot, int recursion_depth, int xMin, int xMax, int yMin, int yMax){
+        //xMin = -Settings.cW/2
+        //xMax = Settings.cW/2
+        //yMin = -Settings.cH/2 + 1
+        //yMax = Settings.cH/2;
+        for (int x = xMin; x < xMax; x++){
+            for (int y = yMin + 1; y < yMax; y++){
+                double[] D = RenderMath.rotate(RenderMath.canvasToViewport(x, y), xRot, yRot, zRot); //V - O
+                Color color = simpleTraceRay(O, D, 0.001, Settings.render_distance, recursion_depth);
+                screen.putPixel(x, y, color);
+            }
+        }
+        screen.display();
+    }
+    private Color simpleTraceRay(double[] O, double[] D, double t_min, double t_max, int recursion_depth){
+        RenderContainer primitive = getClosestPrimitiveColorAndT(O, D, 0.001, t_max);
+
+        if (primitive == null){
+            return Color.BLACK();
+        }
+
+        return primitive.getColor();
+    }
     
     private Color traceRay(double[] O, double[] D, double t_min, double t_max, int recursion_depth){
         RenderContainer primitive = getClosestPrimitiveColorAndT(O, D, 0.001, t_max);

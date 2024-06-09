@@ -1,21 +1,17 @@
 package Base;
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
+import javax.swing.*;
 
 import Base.RenderComponents.Color;
 import Base.RenderComponents.Settings;
 
 import java.awt.image.BufferedImage;
 
-public class Canvas extends JFrame{
+public class Canvas extends JPanel {
 
     private BufferedImage displayImage;
     private JLabel label;
     
     Canvas(int cWidth,int cHeight){//display
-        super("Render Screen");
-
         label = new JLabel();
         add(label);
 
@@ -23,7 +19,6 @@ public class Canvas extends JFrame{
 
 
         setSize(cWidth, cHeight);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
     public void putPixel(int x, int y, Color color){
         
