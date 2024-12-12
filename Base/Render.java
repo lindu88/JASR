@@ -162,7 +162,7 @@ class Render{
     private Pair<Triangle, Double> closestTriangleAndT(double[] O, double[] D, double t_min, double t_max){ //finds closest sphere in ray
         Triangle closest_triangle = null;
         double closest_t = 10000; //just a big number -- should be inf -- also sets a max render distance
-        for (Triangle p: Scene.triangles){
+        for (Triangle p: Scene.object.getList()){
             double[] N = RenderMath.cross(RenderMath.vectorSubtract(p.getB(), p.getA()), RenderMath.vectorSubtract(p.getC(), p.getA()));
             N = RenderMath.scalarMultiply(N, 1f / RenderMath.magnitude(N));
             double t = intersectRayPlane(O, D, N, p.getA());

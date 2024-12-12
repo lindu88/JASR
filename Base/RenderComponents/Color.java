@@ -51,8 +51,7 @@ public class Color{
     private int cap(int rgb){
         int value;
         if (rgb > 255){value = 255;}
-        else if (rgb < 0){value = 0;}
-        else {value = rgb;}
+        else value = Math.max(rgb, 0);
         return value;
     } 
 }

@@ -1,5 +1,5 @@
 package Base.Primitives;
-
+import java.util.LinkedList;
 /*
  * 
  * 
@@ -17,18 +17,19 @@ package Base.Primitives;
 
 
 public class Surface{
-    private Triangle[] triangles;
-    private double[] center;
-    public Surface(Triangle[] triangles, double[] center){
+    private LinkedList<Triangle> triangles;
+    public Surface(LinkedList<Triangle> triangles){
         this.triangles = triangles;
-        this.center = center;
+    }
+    public Surface(){
+        this.triangles = new LinkedList<Triangle>();
     }
     public Triangle get(int index){
         if (triangles == null){
             return null;
         }
         else{
-            return triangles[index];   
+            return triangles.get(index);
         }
         
     }
@@ -37,14 +38,14 @@ public class Surface{
             System.out.println("Error: Null Surface");
         }
         else{
-           this.triangles[index] = triangle;   
+           this.triangles.set(index, triangle);
         }
         
     }
-    public Triangle[] getList(){
-        return this.triangles;
+    public void addLast(Triangle triangle){
+        this.triangles.addLast(triangle);
     }
-    public double[] getCenter(){
-        return this.center;
+    public LinkedList<Triangle> getList(){
+        return this.triangles;
     }
 }

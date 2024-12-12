@@ -1,8 +1,11 @@
 package Base;
 
+import Base.FileReaders.STLReader;
 import Base.Primitives.*;
 import Base.RenderComponents.Color;
 import Base.RenderComponents.Light;
+
+import java.util.LinkedList;
 
 class Scene{
     
@@ -21,7 +24,7 @@ class Scene{
     };
 
     
-    public static Triangle[] triangles = new Triangle[]{
-        new Triangle(new double[]{-10,0,2},new double[]{10,0,2}, new double[]{0,10,2}, Color.RED(), 500, 0.2)
-    };
+    public static Surface object = STLReader.getListASCII("C:/Users/weston12232/Downloads/cube.stl", Color.RED(), 0.5, 0.3);
+
+    //STLReader.getListASCII("C:/Users/weston12232/Downloads/block100.stl", Color.BLUE(), 0.5, 0.3);
 }

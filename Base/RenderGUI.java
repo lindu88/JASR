@@ -120,8 +120,6 @@ public class RenderGUI extends JFrame implements KeyListener {
 
         for (int i = 0; i < yBlockSize; i++){
             for (int j = 0; j < xBlockSize; j++){
-                int finalJ = j;
-                int finalI = i;
 
                 // min and max screen numbers
                 //xMin = -Settings.cW/2
@@ -129,14 +127,14 @@ public class RenderGUI extends JFrame implements KeyListener {
                 //yMin = -Settings.cH/2 + 1
                 //yMax = Settings.cH/2;
 
-                int xMin = finalJ*xSegSize - Settings.cW/2;
-                int xMax = (finalJ+1)*xSegSize - Settings.cW/2;
-                int yMin = (finalI*ySegSize) - Settings.cH/2;
-                int yMax = (finalI+1)*ySegSize -  Settings.cH/2 + 1;
+                int xMin = j *xSegSize - Settings.cW/2;
+                int xMax = (j +1)*xSegSize - Settings.cW/2;
+                int yMin = (i *ySegSize) - Settings.cH/2;
+                int yMax = (i +1)*ySegSize -  Settings.cH/2 + 1;
 
                 Runnable renderThread = () ->
                 {
-                    render.simpleRender(renderCanvas, cameraOrgin, xRot, yRot, zRot, reflRecursion, xMin, xMax, yMin, yMax);
+                    render.render(renderCanvas, cameraOrgin, xRot, yRot, zRot, reflRecursion, xMin, xMax, yMin, yMax);
                 };
                 Thread run = new Thread(renderThread);
                 run.start();
