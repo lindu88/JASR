@@ -1,21 +1,5 @@
 package Base.Primitives;
 import java.util.LinkedList;
-/*
- * 
- * 
- * 
- * 
- * Unused class
- * 
- * 
- * 
- * 
- */
-
-
-
-
-
 public class Surface{
     private LinkedList<Triangle> triangles;
     public Surface(LinkedList<Triangle> triangles){

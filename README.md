@@ -15,7 +15,7 @@ From top down and left to right the GUI consists of:
 ## TODO
 
 - Render export
-- 3D file support (for now STL because it's simple)
+- more 3D file support
 - Transparency
 - Refraction
 - Textures
